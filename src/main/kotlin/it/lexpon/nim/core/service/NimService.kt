@@ -37,7 +37,7 @@ class NimService {
     private fun determineRandomPlayer(): Player = Player.values().toList().shuffled().first()
 
 
-    private fun getGameInformation() = GameInformation(
+    fun getGameInformation() = GameInformation(
             gameStatus = gameStatus,
             leftSticks = leftSticks,
             nextPlayer = nextPlayer,

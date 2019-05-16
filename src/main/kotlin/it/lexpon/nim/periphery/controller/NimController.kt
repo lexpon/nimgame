@@ -1,9 +1,11 @@
 package it.lexpon.nim.periphery.controller
 
-import it.lexpon.nim.core.domainobject.GameStatus.NOT_STARTED
 import it.lexpon.nim.core.domainobject.Player.HUMAN
 import it.lexpon.nim.core.service.NimService
-import it.lexpon.nim.periphery.datatransferobject.*
+import it.lexpon.nim.periphery.datatransferobject.GameStatusResponse
+import it.lexpon.nim.periphery.datatransferobject.LeftSticksResponse
+import it.lexpon.nim.periphery.datatransferobject.NextPlayerResponse
+import it.lexpon.nim.periphery.datatransferobject.PullSticksResponse
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -14,17 +16,13 @@ class NimController(
 
 
     @GetMapping("/status")
-    fun getGameStatus(): GameStatusResponse {
-        // TODO implement
-        return GameStatusResponse(NOT_STARTED)
-    }
+    fun getGameStatus(): GameStatusResponse =
+            GameStatusResponse(nimService.getGameInformation())
 
 
     @PostMapping("/start")
-    fun startGame(): StartGameResponse {
-        val gameInformation = nimService.startGame()
-        return StartGameResponse(gameInformation)
-    }
+    fun startGame(): GameStatusResponse =
+            GameStatusResponse(nimService.startGame())
 
     @GetMapping("/nextplayer")
     fun getNextPlayer(): NextPlayerResponse {
