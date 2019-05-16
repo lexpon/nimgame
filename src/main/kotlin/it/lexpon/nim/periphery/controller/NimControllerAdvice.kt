@@ -1,5 +1,7 @@
 package it.lexpon.nim.periphery.controller
 
+import it.lexpon.nim.core.exception.GameNotEndableException
+import it.lexpon.nim.core.exception.GameNotRestartableException
 import it.lexpon.nim.core.exception.GameNotStartableException
 import it.lexpon.nim.periphery.datatransferobject.ErrorResponse
 import mu.KLogging
@@ -13,9 +15,15 @@ class NimControllerAdvice {
 
     companion object : KLogging()
 
-    @ExceptionHandler(GameNotStartableException::class)
+    @ExceptionHandler(
+            value = [
+                GameNotStartableException::class,
+                GameNotRestartableException::class,
+                GameNotEndableException::class
+            ]
+    )
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    fun handleFeeNotFoundException(exception: GameNotStartableException): ErrorResponse =
+    fun handleFeeNotFoundException(exception: RuntimeException): ErrorResponse =
             ErrorResponse(
                     message = "${exception.message}"
             ).also {

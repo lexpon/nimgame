@@ -2,6 +2,7 @@ package it.lexpon.nim.core.service
 
 import it.lexpon.nim.core.domainobject.GameStatus.RUNNING
 import it.lexpon.nim.core.domainobject.Player
+import it.lexpon.nim.core.exception.GameNotRestartableException
 import it.lexpon.nim.core.exception.GameNotStartableException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -18,7 +19,23 @@ class NimServiceTest {
     }
 
     @Test
-    fun `should start game`() {
+    fun `should start game - not started yet`() {
+        // WHEN
+        val gameInformation = testee.startGame()
+
+        // THEN
+        assertThat(gameInformation.gameStatus).isEqualTo(RUNNING)
+        assertThat(gameInformation.leftSticks).isEqualTo(13)
+        assertThat(gameInformation.nextPlayer).isIn(Player.values().toList())
+        assertThat(gameInformation.winner).isNull()
+    }
+
+    @Test
+    fun `should start game - game ended before`() {
+        // GIVEN
+        testee.startGame()
+        testee.endGame()
+
         // WHEN
         val gameInformation = testee.startGame()
 
@@ -39,6 +56,43 @@ class NimServiceTest {
         assertThrows<GameNotStartableException> {
             // WHEN
             testee.startGame()
+        }
+    }
+
+    @Test
+    fun `should restart a running game`() {
+        // GIVEN
+        testee.startGame()
+
+        // WHEN
+        val gameInformation = testee.reStartGame()
+
+        // THEN
+        assertThat(gameInformation.gameStatus).isEqualTo(RUNNING)
+        assertThat(gameInformation.leftSticks).isEqualTo(13)
+        assertThat(gameInformation.nextPlayer).isIn(Player.values().toList())
+        assertThat(gameInformation.winner).isNull()
+    }
+
+    @Test
+    fun `should not restart game - game not started yet`() {
+        // THEN
+        assertThrows<GameNotRestartableException> {
+            // WHEN
+            testee.reStartGame()
+        }
+    }
+
+    @Test
+    fun `should not restart game - game ended`() {
+        // GIVEN
+        testee.startGame()
+        testee.endGame()
+
+        // THEN
+        assertThrows<GameNotRestartableException> {
+            // WHEN
+            testee.reStartGame()
         }
     }
 
