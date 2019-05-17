@@ -19,23 +19,41 @@ class NimController(
                     .also { logger.info { it } }
 
     @PostMapping("/start")
-    fun startGame(): GameStatusResponse =
-            GameStatusResponse(nimService.startGame())
-                    .also { logger.info { "Game started. Response=$it" } }
+    fun startGame(): GameStatusResponse {
+        val moveInformation = nimService.startGame()
+        val gameInformation = nimService.getGameInformation()
+
+        return GameStatusResponse(moveInformation, gameInformation)
+                .also { logger.info { "Game started. Response=$it" } }
+    }
 
     @PostMapping("/restart")
-    fun reStartGame(): GameStatusResponse =
-            GameStatusResponse(nimService.reStartGame())
-                    .also { logger.info { "Game restarted. Response=$it" } }
+    fun reStartGame(): GameStatusResponse {
+        val moveInformation = nimService.reStartGame()
+        val gameInformation = nimService.getGameInformation()
+
+        return GameStatusResponse(moveInformation, gameInformation)
+                .also { logger.info { "Game restarted. Response=$it" } }
+    }
 
     @PostMapping("/end")
-    fun endGame(): GameStatusResponse =
-            GameStatusResponse(nimService.endGame())
-                    .also { logger.info { "Game ended. Response=$it" } }
+    fun endGame(): GameStatusResponse {
+        val moveInformation = nimService.endGame()
+        val gameInformation = nimService.getGameInformation()
+
+        return GameStatusResponse(moveInformation, gameInformation)
+                .also { logger.info { "Game ended. Response=$it" } }
+
+    }
 
     @PostMapping("/pullsticks")
-    fun pullSticks(@RequestParam sticksToPull: Int): GameStatusResponse =
-            GameStatusResponse(nimService.makeMove(sticksToPull))
-                    .also { logger.info { "Made move. Response=$it" } }
+    fun pullSticks(@RequestParam sticksToPull: Int): GameStatusResponse {
+        val moveInformation = nimService.makeMove(sticksToPull)
+        val gameInformation = nimService.getGameInformation()
+
+        return GameStatusResponse(moveInformation, gameInformation)
+                .also { logger.info { "Made move. Response=$it" } }
+
+    }
 
 }

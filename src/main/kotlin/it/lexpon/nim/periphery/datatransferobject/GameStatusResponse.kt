@@ -1,32 +1,24 @@
 package it.lexpon.nim.periphery.datatransferobject
 
 import it.lexpon.nim.core.domainobject.GameInformation
-import it.lexpon.nim.core.domainobject.GameStatus
 import it.lexpon.nim.core.domainobject.MoveInformation
-import it.lexpon.nim.core.domainobject.Player
 
 data class GameStatusResponse(
-        val gameStatus: GameStatus,
-        val moveInformationResponse: MoveInformationResponse? = null,
+        val gameState: String,
         val leftSticks: Int,
-        val winner: Player? = null,
-        val message: String
+        val eventList: List<String>? = null,
+        val winner: String? = null
 ) {
     constructor(gameInformation: GameInformation) : this(
-            gameStatus = gameInformation.gameStatus,
-            moveInformationResponse = gameInformation.moveInformation?.let { MoveInformationResponse(it) },
+            gameState = gameInformation.gameState.name,
             leftSticks = gameInformation.leftSticks,
-            winner = gameInformation.winner,
-            message = gameInformation.message!!
+            winner = gameInformation.winner?.name
     )
-}
 
-data class MoveInformationResponse(
-        val pulledSticksByHuman: Int?,
-        val pulledSticksByComputer: Int?
-) {
-    constructor(moveInformation: MoveInformation) : this(
-            pulledSticksByHuman = moveInformation.pulledSticksByHuman,
-            pulledSticksByComputer = moveInformation.pulledSticksByComputer
+    constructor(moveInformation: MoveInformation, gameInformation: GameInformation) : this(
+            gameState = gameInformation.gameState.name,
+            leftSticks = gameInformation.leftSticks,
+            winner = gameInformation.winner?.name,
+            eventList = moveInformation.eventList.getGameEvents().map { it.message }
     )
 }
