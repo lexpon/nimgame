@@ -3,6 +3,7 @@ package it.lexpon.nim.periphery.controller
 import it.lexpon.nim.core.exception.GameNotEndableException
 import it.lexpon.nim.core.exception.GameNotRestartableException
 import it.lexpon.nim.core.exception.GameNotStartableException
+import it.lexpon.nim.core.exception.MoveNotPossibleException
 import it.lexpon.nim.periphery.datatransferobject.ErrorResponse
 import mu.KLogging
 import org.springframework.http.HttpStatus
@@ -19,7 +20,8 @@ class NimControllerAdvice {
             value = [
                 GameNotStartableException::class,
                 GameNotRestartableException::class,
-                GameNotEndableException::class
+                GameNotEndableException::class,
+                MoveNotPossibleException::class
             ]
     )
     @ResponseStatus(HttpStatus.BAD_REQUEST)

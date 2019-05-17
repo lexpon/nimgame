@@ -1,7 +1,6 @@
 package it.lexpon.nim.core.service
 
 import it.lexpon.nim.core.domainobject.GameStatus.RUNNING
-import it.lexpon.nim.core.domainobject.Player
 import it.lexpon.nim.core.exception.GameNotRestartableException
 import it.lexpon.nim.core.exception.GameNotStartableException
 import org.assertj.core.api.Assertions.assertThat
@@ -26,7 +25,6 @@ class NimServiceTest {
         // THEN
         assertThat(gameInformation.gameStatus).isEqualTo(RUNNING)
         assertThat(gameInformation.leftSticks).isEqualTo(13)
-        assertThat(gameInformation.nextPlayer).isIn(Player.values().toList())
         assertThat(gameInformation.winner).isNull()
     }
 
@@ -42,7 +40,6 @@ class NimServiceTest {
         // THEN
         assertThat(gameInformation.gameStatus).isEqualTo(RUNNING)
         assertThat(gameInformation.leftSticks).isEqualTo(13)
-        assertThat(gameInformation.nextPlayer).isIn(Player.values().toList())
         assertThat(gameInformation.winner).isNull()
     }
 
@@ -70,7 +67,6 @@ class NimServiceTest {
         // THEN
         assertThat(gameInformation.gameStatus).isEqualTo(RUNNING)
         assertThat(gameInformation.leftSticks).isEqualTo(13)
-        assertThat(gameInformation.nextPlayer).isIn(Player.values().toList())
         assertThat(gameInformation.winner).isNull()
     }
 
