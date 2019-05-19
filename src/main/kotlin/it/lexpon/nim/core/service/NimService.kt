@@ -1,149 +1,85 @@
 package it.lexpon.nim.core.service
 
 import it.lexpon.nim.core.domainobject.*
-import it.lexpon.nim.core.domainobject.GameState.*
+import it.lexpon.nim.core.domainobject.GameState.NOT_STARTED
+import it.lexpon.nim.core.domainobject.GameState.RUNNING
 import it.lexpon.nim.core.domainobject.Player.COMPUTER
 import it.lexpon.nim.core.domainobject.Player.HUMAN
-import it.lexpon.nim.core.exception.*
+import it.lexpon.nim.core.exception.NoGameException
 import mu.KLogging
 import org.springframework.stereotype.Service
 
 @Service
 class NimService {
 
-    companion object : KLogging() {
-        private const val STICKS_START = 13
-        private const val STICKS_END = 0
-        private val STICKS_TO_PULL_POSSIBLE = listOf(1, 2, 3)
-    }
+    companion object : KLogging()
 
-    private var gameState: GameState = NOT_STARTED
-    private var leftSticks: Int = STICKS_START
-    private var currentPlayer: Player? = null
-    private var winner: Player? = null
+    private var game: NimGame? = null
 
-    fun getGameInformation() = GameInformation(
-            gameState = gameState,
-            leftSticks = leftSticks,
-            winner = winner
-    )
-
+    fun getGameInformation() =
+            game?.let { GameInformation(it.getNimGameInformation()) }
+                    ?: GameInformation(state = NOT_STARTED)
 
     fun startGame(): MoveInformation {
-        val allowedStatus = listOf(NOT_STARTED, ENDED)
-        if (!allowedStatus.contains(gameState))
-            throw GameNotStartableException("Cannot start game. Game can only be started if gameState is in $allowedStatus ")
+        game = NimGame.startGame()
 
         val events = mutableListOf<GameEvent>()
-
-        initializeGame()
         events.add(Start("Game started"))
+        makeComputerMoveIfNecessary(events)
 
-        if (currentPlayer == COMPUTER) {
-            val sticksToPull = getSticksToPullForComputer()
-            pullSticks(sticksToPull)
-            events.add(ComputerMove(sticksToPull))
-            currentPlayer = HUMAN
-        }
-
-        return MoveInformation(EventList(events))
+        return MoveInformation(GameEventList(events))
     }
 
-
-    fun reStartGame(): MoveInformation {
-        if (gameState != RUNNING)
-            throw GameNotRestartableException("Cannot restart game. Game has to have gameState=$RUNNING to be restarted.")
-
-        val events = mutableListOf<GameEvent>()
-
-        initializeGame()
-        events.add(Restart("Game restarted"))
-
-        if (currentPlayer == COMPUTER) {
-            val sticksToPull = getSticksToPullForComputer()
-            pullSticks(sticksToPull)
-            events.add(ComputerMove(sticksToPull))
-            currentPlayer = HUMAN
-        }
-
-        return MoveInformation(EventList(events))
-    }
-
-
-    private fun initializeGame() {
-        gameState = RUNNING
-        leftSticks = STICKS_START
-        currentPlayer = determineRandomPlayer()
-    }
-
-    private fun determineRandomPlayer(): Player = Player.values().toList().shuffled().first()
-
-    fun endGame(): MoveInformation {
-        if (gameState != RUNNING)
-            throw GameNotEndableException("Cannot end game. Game has to have gameState=$RUNNING to be ended.")
-
-        terminateGame()
-
-        return MoveInformation(EventList(listOf(End("Game ended"))))
-    }
-
-
-    fun makeMove(sticksToPullByHuman: Int): MoveInformation {
-        if (gameState != RUNNING)
-            throw MoveNotPossibleException("Wrong gameState=$gameState. Pulling sticks only possible when gameState=$RUNNING")
-
-        if (currentPlayer != HUMAN)
-            throw MoveNotPossibleException("Current player has to be $HUMAN, but is $currentPlayer")
-
-        val events = mutableListOf<GameEvent>()
-
-        pullSticks(sticksToPullByHuman)
-        events.add(HumanMove(sticksToPullByHuman))
-        if (hasPlayerLost()) {
-            terminateGame(winningPlayer = COMPUTER)
-            events.add(End("Game ended. Computer won."))
-        } else {
-            val sticksToPullByComputer: Int = getSticksToPullForComputer()
-            pullSticks(sticksToPullByComputer)
-            events.add(ComputerMove(sticksToPullByComputer))
-            if (hasPlayerLost()) {
-                terminateGame(winningPlayer = HUMAN)
-                events.add(End("Game ended. Human won."))
+    private fun makeComputerMoveIfNecessary(events: MutableList<GameEvent>) =
+            game?.let {
+                val info = it.getNimGameInformation()
+                if (info.state == RUNNING && info.currentPlayer == COMPUTER) {
+                    val sticksToPull = getSticksToPullForComputer()
+                    it.pullSticks(sticksToPull)
+                    events.add(ComputerMove(sticksToPull))
+                }
             }
-        }
 
-        return MoveInformation(EventList(events))
-    }
+    private fun makeHumanMoveIfNecessary(sticksToPull: Int, events: MutableList<GameEvent>) =
+            game?.let {
+                val info = it.getNimGameInformation()
+                if (info.state == RUNNING && info.currentPlayer == HUMAN) {
+                    it.pullSticks(sticksToPull)
+                    events.add(HumanMove(sticksToPull))
+                }
+            }
 
-    private fun getSticksToPullForComputer(): Int = getPossibleSticksToPull().shuffled().first()
+    fun reStartGame(): MoveInformation =
+            game?.let {
+                it.restartGame()
+                val events = mutableListOf<GameEvent>()
+                events.add(Restart("Game restarted"))
+                makeComputerMoveIfNecessary(events)
+                return MoveInformation(GameEventList(events))
+            } ?: run {
+                throw NoGameException("Game has not been started yet. Not possible not restart it.")
+            }
 
+    fun endGame(): MoveInformation =
+            game?.let {
+                it.endGame()
+                return MoveInformation(GameEventList(listOf(End("Game ended"))))
+            } ?: run {
+                throw NoGameException("Game has not been started yet. Not possible not end it.")
+            }
 
-    private fun pullSticks(sticksToPull: Int) {
-        val allowedNumberOfSticks = getPossibleSticksToPull()
-        if (!allowedNumberOfSticks.contains(sticksToPull))
-            throw SticksToPullException("Not possible to pull $sticksToPull sticks. Number of sticks has to be in $allowedNumberOfSticks")
-        leftSticks = leftSticks - sticksToPull
-    }
+    fun makeMove(sticksToPullByHuman: Int): MoveInformation =
+            game?.let {
+                val events = mutableListOf<GameEvent>()
+                makeHumanMoveIfNecessary(sticksToPullByHuman, events)
+                makeComputerMoveIfNecessary(events)
+                return MoveInformation(GameEventList(events))
+            } ?: run {
+                throw NoGameException("Game has not been started yet. Not possible to make a move.")
+            }
 
-
-    private fun getPossibleSticksToPull(): List<Int> {
-        if (leftSticks >= STICKS_TO_PULL_POSSIBLE.max()!!)
-            return STICKS_TO_PULL_POSSIBLE
-
-        val min = STICKS_TO_PULL_POSSIBLE.min()!!
-        val max = leftSticks
-        return IntRange(min, max).toList()
-    }
-
-
-    private fun hasPlayerLost(): Boolean = leftSticks == 0
-
-
-    private fun terminateGame(winningPlayer: Player? = null) {
-        gameState = ENDED
-        leftSticks = STICKS_END
-        currentPlayer = null
-        winner = winningPlayer
-    }
+    private fun getSticksToPullForComputer(): Int =
+            game?.getPossibleSticksToPull()?.shuffled()?.first()
+                    ?: run { throw NoGameException("Game has not been started yet. Not possible to determine sticks to pull.") }
 
 }

@@ -5,9 +5,28 @@ import it.lexpon.nim.core.exception.NotPossibleEventCombinationException
 
 enum class GameEventType {
     START, HUMAN_MOVE, COMPUTER_MOVE, RESTART, END;
+}
+
+class GameEventList(gameEvents: List<GameEvent>) {
+    private val gameEvents: List<GameEvent>
+
+    init {
+        validateEventList(gameEvents)
+        this.gameEvents = gameEvents
+    }
+
+    fun getGameEvents() = gameEvents
 
     companion object {
-        fun possibleEventTypes() = listOf(
+
+        private fun validateEventList(gameEventList: List<GameEvent>) {
+            val eventTypeList = gameEventList.map { it.gameEventType }
+            val possibleEventTypes = possibleEventTypes()
+            if (!possibleEventTypes.contains(eventTypeList))
+                throw NotPossibleEventCombinationException("GameEvent combination $eventTypeList is not possible. Only these combinations are allowed: $possibleEventTypes")
+        }
+
+        private fun possibleEventTypes() = listOf(
                 listOf(START),
                 listOf(START, COMPUTER_MOVE),
                 listOf(HUMAN_MOVE, COMPUTER_MOVE),
@@ -18,31 +37,10 @@ enum class GameEventType {
                 listOf(END)
         )
     }
-
-}
-
-class EventList(gameEventList: List<GameEvent>) {
-    private val gameEventList: List<GameEvent>
-
-    init {
-        GameEvent.validateEventList(gameEventList)
-        this.gameEventList = gameEventList
-    }
-
-    fun getGameEvents() = gameEventList
 }
 
 abstract class GameEvent(val message: String) {
     abstract val gameEventType: GameEventType
-
-    companion object {
-        fun validateEventList(gameEventList: List<GameEvent>) {
-            val eventTypeList = gameEventList.map { it.gameEventType }
-            val possibleEventTypes = GameEventType.possibleEventTypes()
-            if (!possibleEventTypes.contains(eventTypeList))
-                throw NotPossibleEventCombinationException("GameEvent combination $eventTypeList is not possible. Only these combinations are allowed: $possibleEventTypes")
-        }
-    }
 }
 
 class Start(message: String) : GameEvent(message) {
