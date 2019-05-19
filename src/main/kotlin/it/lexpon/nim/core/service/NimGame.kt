@@ -18,8 +18,7 @@ class NimGame private constructor(private var info: NimGameInformation) {
         private const val STICKS_START = 13
         private val STICKS_TO_PULL_POSSIBLE = listOf(1, 2, 3)
 
-        fun startGame(): NimGame {
-            val firstPlayer = determineRandomPlayer()
+        fun startGame(firstPlayer: Player): NimGame {
             val game = NimGame(
                     info = NimGameInformation(
                             state = RUNNING,
@@ -30,8 +29,6 @@ class NimGame private constructor(private var info: NimGameInformation) {
             logger.debug { "Started new game. Info=${game.info}" }
             return game
         }
-
-        private fun determineRandomPlayer(): Player = Player.values().toList().shuffled().first()
     }
 
     fun getNimGameInformation() = info
@@ -44,13 +41,13 @@ class NimGame private constructor(private var info: NimGameInformation) {
         logger.debug { "Game ended. NimGameInformation=$info" }
     }
 
-    fun restartGame() {
+    fun restartGame(firstPlayer: Player) {
         if (info.state != RUNNING)
             throw GameNotRestartableException("Cannot restart game. Game has to have gameState=$RUNNING to be restarted.")
 
         info = info.copy(
                 leftSticks = STICKS_START,
-                currentPlayer = determineRandomPlayer(),
+                currentPlayer = firstPlayer,
                 winner = null
         )
     }
@@ -69,13 +66,13 @@ class NimGame private constructor(private var info: NimGameInformation) {
             HUMAN -> COMPUTER
             COMPUTER -> HUMAN
         }
-        val winner = if (hasPlayerLost()) nextPlayer else null
+        val winner = if (nextLeftSticks == 0) nextPlayer else null
         val state = winner?.let { ENDED } ?: RUNNING
 
         info = info.copy(
                 state = state,
                 leftSticks = nextLeftSticks,
-                currentPlayer = nextPlayer,
+                currentPlayer = if (winner == null) nextPlayer else currentPlayer,
                 winner = winner
         )
 
@@ -91,7 +88,6 @@ class NimGame private constructor(private var info: NimGameInformation) {
         return IntRange(min, max).toList()
     }
 
-    private fun hasPlayerLost(): Boolean = info.leftSticks == 0
 }
 
 
