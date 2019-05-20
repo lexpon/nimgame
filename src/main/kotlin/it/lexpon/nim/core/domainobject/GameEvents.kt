@@ -1,6 +1,21 @@
 package it.lexpon.nim.core.domainobject
 
 import it.lexpon.nim.core.domainobject.GameEventType.*
+import it.lexpon.nim.core.service.NimGameEventValidator
+
+data class GameEventInfo(
+        val gameEvents: List<GameEvent>
+) {
+
+    constructor(gameEvent: GameEvent) : this(
+            gameEvents = listOf(gameEvent)
+    )
+
+    init {
+        NimGameEventValidator.validateEventList(gameEvents)
+    }
+
+}
 
 enum class GameEventType {
     START, HUMAN_MOVE, COMPUTER_MOVE, RESTART, END;

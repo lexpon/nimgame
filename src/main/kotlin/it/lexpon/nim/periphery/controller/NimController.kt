@@ -1,7 +1,8 @@
 package it.lexpon.nim.periphery.controller
 
 import it.lexpon.nim.core.service.NimGameHandler
-import it.lexpon.nim.periphery.datatransferobject.GameInformationResponse
+import it.lexpon.nim.periphery.datatransferobject.GameHistoryResponse
+import it.lexpon.nim.periphery.datatransferobject.GameInfoResponse
 import mu.KLogging
 import org.springframework.web.bind.annotation.*
 
@@ -14,46 +15,49 @@ class NimController(
     companion object : KLogging()
 
     @GetMapping("/status")
-    fun getGameStatus(): GameInformationResponse =
-            GameInformationResponse(nimGameHandler.getGameInformation())
+    fun getGameStatus(): GameInfoResponse =
+            GameInfoResponse(nimGameHandler.getGameInfo())
                     .also { logger.info { it } }
 
     @PostMapping("/start")
-    fun startGame(): GameInformationResponse {
-        val moveInformation = nimGameHandler.startGame()
-        val gameInformation = nimGameHandler.getGameInformation()
+    fun startGame(): GameInfoResponse {
+        val gameEventInfo = nimGameHandler.startGame()
+        val gameInfo = nimGameHandler.getGameInfo()
 
-        return GameInformationResponse(moveInformation, gameInformation)
+        return GameInfoResponse(gameEventInfo, gameInfo)
                 .also { logger.info { "Game started. Response=$it" } }
     }
 
     @PostMapping("/restart")
-    fun reStartGame(): GameInformationResponse {
-        val moveInformation = nimGameHandler.reStartGame()
-        val gameInformation = nimGameHandler.getGameInformation()
+    fun reStartGame(): GameInfoResponse {
+        val gameEventInfo = nimGameHandler.reStartGame()
+        val gameInfo = nimGameHandler.getGameInfo()
 
-        return GameInformationResponse(moveInformation, gameInformation)
+        return GameInfoResponse(gameEventInfo, gameInfo)
                 .also { logger.info { "Game restarted. Response=$it" } }
     }
 
     @PostMapping("/end")
-    fun endGame(): GameInformationResponse {
-        val moveInformation = nimGameHandler.endGame()
-        val gameInformation = nimGameHandler.getGameInformation()
+    fun endGame(): GameInfoResponse {
+        val gameEventInfo = nimGameHandler.endGame()
+        val gameInfo = nimGameHandler.getGameInfo()
 
-        return GameInformationResponse(moveInformation, gameInformation)
+        return GameInfoResponse(gameEventInfo, gameInfo)
                 .also { logger.info { "Game ended. Response=$it" } }
 
     }
 
     @PostMapping("/pullsticks")
-    fun pullSticks(@RequestParam sticksToPull: Int): GameInformationResponse {
-        val moveInformation = nimGameHandler.makeMove(sticksToPull)
-        val gameInformation = nimGameHandler.getGameInformation()
+    fun pullSticks(@RequestParam sticksToPull: Int): GameInfoResponse {
+        val gameEventInfo = nimGameHandler.makeMove(sticksToPull)
+        val gameInfo = nimGameHandler.getGameInfo()
 
-        return GameInformationResponse(moveInformation, gameInformation)
+        return GameInfoResponse(gameEventInfo, gameInfo)
                 .also { logger.info { "Made move. Response=$it" } }
 
     }
+
+    @GetMapping("/history")
+    fun getGameHistory(): GameHistoryResponse = GameHistoryResponse(nimGameHandler.getGameHistory())
 
 }

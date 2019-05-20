@@ -18,7 +18,7 @@ class NimGameTest {
         val game = NimGame.startGame(HUMAN)
 
         // WHEN
-        val info = game.getNimGameInformation()
+        val info = game.getGameInfo()
 
         // THEN
         assertThat(info).isNotNull
@@ -37,7 +37,7 @@ class NimGameTest {
         game.endGame()
 
         // THEN
-        val info = game.getNimGameInformation()
+        val info = game.getGameInfo()
         assertThat(info).isNotNull
         assertThat(info.state).isEqualTo(ENDED)
     }
@@ -57,7 +57,7 @@ class NimGameTest {
 
 
         // THEN
-        val info = game.getNimGameInformation()
+        val info = game.getGameInfo()
         assertThat(info).isNotNull
         assertThat(info.state).isEqualTo(ENDED)
         assertThat(info.leftSticks).isEqualTo(0)
@@ -88,7 +88,7 @@ class NimGameTest {
         game.restartGame(HUMAN)
 
         // THEN
-        val info = game.getNimGameInformation()
+        val info = game.getGameInfo()
         assertThat(info).isNotNull
         assertThat(info.state).isEqualTo(RUNNING)
         assertThat(info.leftSticks).isEqualTo(13)
@@ -119,7 +119,7 @@ class NimGameTest {
             game.pullSticks(sticks)
 
         // THEN
-        val info = game.getNimGameInformation()
+        val info = game.getGameInfo()
         assertThat(info.leftSticks).isEqualTo(7)
     }
 

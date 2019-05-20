@@ -1,8 +1,8 @@
 package it.lexpon.nim.core.service
 
+import it.lexpon.nim.core.domainobject.GameInfo
 import it.lexpon.nim.core.domainobject.GameState.ENDED
 import it.lexpon.nim.core.domainobject.GameState.RUNNING
-import it.lexpon.nim.core.domainobject.NimGameInformation
 import it.lexpon.nim.core.domainobject.Player
 import it.lexpon.nim.core.domainobject.Player.COMPUTER
 import it.lexpon.nim.core.domainobject.Player.HUMAN
@@ -12,7 +12,7 @@ import it.lexpon.nim.core.exception.PullSticksNotPossibleException
 import it.lexpon.nim.core.exception.SticksToPullException
 import mu.KLogging
 
-class NimGame private constructor(private var info: NimGameInformation) {
+class NimGame private constructor(private var info: GameInfo) {
 
     companion object : KLogging() {
         private const val STICKS_START = 13
@@ -20,7 +20,8 @@ class NimGame private constructor(private var info: NimGameInformation) {
 
         fun startGame(firstPlayer: Player): NimGame {
             val game = NimGame(
-                    info = NimGameInformation(
+                    info = GameInfo(
+                            id = NimGameIdGenerator.getNewId(),
                             state = RUNNING,
                             leftSticks = STICKS_START,
                             currentPlayer = firstPlayer
@@ -31,14 +32,14 @@ class NimGame private constructor(private var info: NimGameInformation) {
         }
     }
 
-    fun getNimGameInformation() = info
+    fun getGameInfo() = info
 
     fun endGame() {
         if (info.state != RUNNING)
             throw GameNotEndableException("Cannot end game. Game has to have gameState=$RUNNING to be ended.")
 
         info = info.copy(state = ENDED)
-        logger.debug { "Game ended. NimGameInformation=$info" }
+        logger.debug { "Game ended. GameInfo=$info" }
     }
 
     fun restartGame(firstPlayer: Player) {
