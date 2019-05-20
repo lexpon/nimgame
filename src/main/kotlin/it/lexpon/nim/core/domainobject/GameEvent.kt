@@ -1,42 +1,9 @@
 package it.lexpon.nim.core.domainobject
 
 import it.lexpon.nim.core.domainobject.GameEventType.*
-import it.lexpon.nim.core.exception.NotPossibleEventCombinationException
 
 enum class GameEventType {
     START, HUMAN_MOVE, COMPUTER_MOVE, RESTART, END;
-}
-
-class GameEventList(gameEvents: List<GameEvent>) {
-    private val gameEvents: List<GameEvent>
-
-    init {
-        validateEventList(gameEvents)
-        this.gameEvents = gameEvents
-    }
-
-    fun getGameEvents() = gameEvents
-
-    companion object {
-
-        private fun validateEventList(gameEventList: List<GameEvent>) {
-            val eventTypeList = gameEventList.map { it.gameEventType }
-            val possibleEventTypes = possibleEventTypes()
-            if (!possibleEventTypes.contains(eventTypeList))
-                throw NotPossibleEventCombinationException("GameEvent combination $eventTypeList is not possible. Only these combinations are allowed: $possibleEventTypes")
-        }
-
-        private fun possibleEventTypes() = listOf(
-                listOf(START),
-                listOf(START, COMPUTER_MOVE),
-                listOf(HUMAN_MOVE, COMPUTER_MOVE),
-                listOf(HUMAN_MOVE, COMPUTER_MOVE, END),
-                listOf(HUMAN_MOVE, END),
-                listOf(RESTART),
-                listOf(RESTART, COMPUTER_MOVE),
-                listOf(END)
-        )
-    }
 }
 
 abstract class GameEvent(val message: String) {

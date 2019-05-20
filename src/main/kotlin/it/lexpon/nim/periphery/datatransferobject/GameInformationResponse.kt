@@ -1,7 +1,7 @@
 package it.lexpon.nim.periphery.datatransferobject
 
-import it.lexpon.nim.core.domainobject.GameInformation
 import it.lexpon.nim.core.domainobject.MoveInformation
+import it.lexpon.nim.core.domainobject.NimGameInformation
 
 data class GameInformationResponse(
         val gameState: String,
@@ -9,16 +9,16 @@ data class GameInformationResponse(
         val gameEvents: List<String>? = null,
         val winner: String? = null
 ) {
-    constructor(gameInformation: GameInformation) : this(
+    constructor(gameInformation: NimGameInformation) : this(
             gameState = gameInformation.state.name,
             leftSticks = gameInformation.leftSticks,
             winner = gameInformation.winner?.name
     )
 
-    constructor(moveInformation: MoveInformation, gameInformation: GameInformation) : this(
+    constructor(moveInformation: MoveInformation, gameInformation: NimGameInformation) : this(
             gameState = gameInformation.state.name,
             leftSticks = gameInformation.leftSticks,
             winner = gameInformation.winner?.name,
-            gameEvents = moveInformation.gameEventList.getGameEvents().map { "${it.gameEventType}: ${it.message}" }
+            gameEvents = moveInformation.gameEvents.map { "${it.gameEventType}: ${it.message}" }
     )
 }

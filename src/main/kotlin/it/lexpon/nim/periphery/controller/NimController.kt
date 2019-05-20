@@ -1,6 +1,6 @@
 package it.lexpon.nim.periphery.controller
 
-import it.lexpon.nim.core.service.NimService
+import it.lexpon.nim.core.service.NimGameHandler
 import it.lexpon.nim.periphery.datatransferobject.GameInformationResponse
 import mu.KLogging
 import org.springframework.web.bind.annotation.*
@@ -8,20 +8,20 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/v1/")
 class NimController(
-        private val nimService: NimService
+        private val nimGameHandler: NimGameHandler
 ) {
 
     companion object : KLogging()
 
     @GetMapping("/status")
     fun getGameStatus(): GameInformationResponse =
-            GameInformationResponse(nimService.getGameInformation())
+            GameInformationResponse(nimGameHandler.getGameInformation())
                     .also { logger.info { it } }
 
     @PostMapping("/start")
     fun startGame(): GameInformationResponse {
-        val moveInformation = nimService.startGame()
-        val gameInformation = nimService.getGameInformation()
+        val moveInformation = nimGameHandler.startGame()
+        val gameInformation = nimGameHandler.getGameInformation()
 
         return GameInformationResponse(moveInformation, gameInformation)
                 .also { logger.info { "Game started. Response=$it" } }
@@ -29,8 +29,8 @@ class NimController(
 
     @PostMapping("/restart")
     fun reStartGame(): GameInformationResponse {
-        val moveInformation = nimService.reStartGame()
-        val gameInformation = nimService.getGameInformation()
+        val moveInformation = nimGameHandler.reStartGame()
+        val gameInformation = nimGameHandler.getGameInformation()
 
         return GameInformationResponse(moveInformation, gameInformation)
                 .also { logger.info { "Game restarted. Response=$it" } }
@@ -38,8 +38,8 @@ class NimController(
 
     @PostMapping("/end")
     fun endGame(): GameInformationResponse {
-        val moveInformation = nimService.endGame()
-        val gameInformation = nimService.getGameInformation()
+        val moveInformation = nimGameHandler.endGame()
+        val gameInformation = nimGameHandler.getGameInformation()
 
         return GameInformationResponse(moveInformation, gameInformation)
                 .also { logger.info { "Game ended. Response=$it" } }
@@ -48,8 +48,8 @@ class NimController(
 
     @PostMapping("/pullsticks")
     fun pullSticks(@RequestParam sticksToPull: Int): GameInformationResponse {
-        val moveInformation = nimService.makeMove(sticksToPull)
-        val gameInformation = nimService.getGameInformation()
+        val moveInformation = nimGameHandler.makeMove(sticksToPull)
+        val gameInformation = nimGameHandler.getGameInformation()
 
         return GameInformationResponse(moveInformation, gameInformation)
                 .also { logger.info { "Made move. Response=$it" } }

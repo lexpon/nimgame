@@ -1,8 +1,8 @@
 package it.lexpon.nim.core.service
 
-import it.lexpon.nim.core.domainobject.GameState
 import it.lexpon.nim.core.domainobject.GameState.ENDED
 import it.lexpon.nim.core.domainobject.GameState.RUNNING
+import it.lexpon.nim.core.domainobject.NimGameInformation
 import it.lexpon.nim.core.domainobject.Player
 import it.lexpon.nim.core.domainobject.Player.COMPUTER
 import it.lexpon.nim.core.domainobject.Player.HUMAN
@@ -89,11 +89,3 @@ class NimGame private constructor(private var info: NimGameInformation) {
     }
 
 }
-
-
-data class NimGameInformation(
-        val state: GameState,
-        val leftSticks: Int,
-        val currentPlayer: Player,
-        val winner: Player? = null
-)

@@ -1,23 +1,25 @@
 package it.lexpon.nim.core.service
 
 import it.lexpon.nim.core.domainobject.*
-import it.lexpon.nim.core.domainobject.GameState.*
+import it.lexpon.nim.core.domainobject.GameState.ENDED
+import it.lexpon.nim.core.domainobject.GameState.RUNNING
 import it.lexpon.nim.core.domainobject.Player.COMPUTER
 import it.lexpon.nim.core.domainobject.Player.HUMAN
+import it.lexpon.nim.core.exception.MoveNotPossibleException
 import it.lexpon.nim.core.exception.NoGameException
 import mu.KLogging
 import org.springframework.stereotype.Service
 
 @Service
-class NimService {
+class NimGameHandler {
 
     companion object : KLogging()
 
     private var game: NimGame? = null
 
     fun getGameInformation() =
-            game?.let { GameInformation(it.getNimGameInformation()) }
-                    ?: GameInformation(state = NOT_STARTED)
+            game?.getNimGameInformation()
+                    ?: run { throw NoGameException("Game has not been started. Not possible to get game information.") }
 
     fun startGame(): MoveInformation {
         game = NimGame.startGame(determineRandomPlayer())
@@ -26,7 +28,7 @@ class NimService {
         events.add(Start("Game started"))
         makeComputerMoveIfNecessary(game!!, events)
 
-        return MoveInformation(GameEventList(events))
+        return MoveInformation(events)
     }
 
     private fun determineRandomPlayer(): Player = Player.values().toList().shuffled().first()
@@ -56,7 +58,7 @@ class NimService {
                 val events = mutableListOf<GameEvent>()
                 events.add(Restart("Game restarted"))
                 makeComputerMoveIfNecessary(it, events)
-                return MoveInformation(GameEventList(events))
+                return MoveInformation(events)
             } ?: run {
                 throw NoGameException("Game has not been started yet. Not possible not restart it.")
             }
@@ -64,13 +66,17 @@ class NimService {
     fun endGame(): MoveInformation =
             game?.let {
                 it.endGame()
-                return MoveInformation(GameEventList(listOf(End("Game ended"))))
+                return MoveInformation(End("Game ended"))
             } ?: run {
                 throw NoGameException("Game has not been started yet. Not possible not end it.")
             }
 
     fun makeMove(sticksToPullByHuman: Int): MoveInformation =
             game?.let {
+                val currentState = it.getNimGameInformation().state
+                if (currentState != RUNNING)
+                    throw MoveNotPossibleException("Making moves is only possible if game has state=$RUNNING. Current state=$currentState")
+
                 val events = mutableListOf<GameEvent>()
                 makeHumanMoveIfNecessary(it, sticksToPullByHuman, events)
                 makeComputerMoveIfNecessary(it, events)
@@ -79,7 +85,7 @@ class NimService {
                 if (info.state == ENDED)
                     events.add(End("Game Ended. Winner is ${info.winner}"))
 
-                return MoveInformation(GameEventList(events))
+                return MoveInformation(events)
             } ?: run {
                 throw NoGameException("Game has not been started yet. Not possible to make a move.")
             }

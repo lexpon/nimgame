@@ -6,13 +6,13 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.jupiter.api.assertThrows
 
-class NimServiceTest {
+class NimGameHandlerTest {
 
-    private var testee: NimService = NimService()
+    private var testee: NimGameHandler = NimGameHandler()
 
     @Before
     fun init() {
-        testee = NimService()
+        testee = NimGameHandler()
     }
 
     @Test
