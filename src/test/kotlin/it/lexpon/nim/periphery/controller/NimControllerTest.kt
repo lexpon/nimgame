@@ -1,6 +1,5 @@
 package it.lexpon.nim.periphery.controller
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,9 +22,6 @@ class NimControllerTest {
 
     @Autowired
     lateinit var mockMvc: MockMvc
-
-    @Autowired
-    lateinit var objectMapper: ObjectMapper
 
     @Test
     fun `should get game status`() {

@@ -301,4 +301,22 @@ class NimGameHandlerTest {
         assertThat(info.winner).isEqualTo(COMPUTER)
     }
 
+    @Test
+    fun `should get game history`() {
+        // GIVEN
+        whenever(randomPlayerGenerator.determineRandomPlayer()).thenReturn(HUMAN)
+        testee.startGame()
+        testee.endGame()
+
+        // WHEN
+        val history = testee.getGameHistory()
+        // THEN
+        assertThat(history).isNotNull
+        assertThat(history.gameHistory.first().id).isEqualTo(1)
+        assertThat(history.gameHistory.first().currentPlayer).isEqualTo(HUMAN)
+        assertThat(history.gameHistory.first().leftSticks).isEqualTo(13)
+        assertThat(history.gameHistory.first().state).isEqualTo(ENDED)
+        assertThat(history.gameHistory.first().winner).isNull()
+    }
+
 }
