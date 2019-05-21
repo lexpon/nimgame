@@ -13,7 +13,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class NimGameHandler(
-        private val randomPlayerGenerator: RandomPlayerGenerator
+        private val randomPlayerGenerator: RandomPlayerGenerator,
+        private val sticksToPullGenerator: SticksToPullGenerator
 ) {
 
     companion object : KLogging()
@@ -101,7 +102,7 @@ class NimGameHandler(
             }
 
     private fun getSticksToPullForComputer(): Int =
-            game?.getPossibleSticksToPull()?.shuffled()?.first()
+            game?.let { sticksToPullGenerator.getSticksToPullForComputer(it) }
                     ?: run { throw NoGameException("Game has not been started yet. Not possible to determine sticks to pull.") }
 
 }
