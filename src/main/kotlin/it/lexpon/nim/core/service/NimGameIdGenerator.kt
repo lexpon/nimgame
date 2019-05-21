@@ -1,6 +1,9 @@
 package it.lexpon.nim.core.service
 
-object NimGameIdGenerator {
+import org.springframework.stereotype.Component
+
+@Component
+class NimGameIdGenerator {
     private var currentId: Int = 0
 
     fun getNewId(): Int {

@@ -15,7 +15,7 @@ class NimGameTest {
     @Test
     fun `should start new game`() {
         // given
-        val game = NimGame.startGame(HUMAN)
+        val game = NimGame.startGame(1, HUMAN)
 
         // WHEN
         val info = game.getGameInfo()
@@ -31,7 +31,7 @@ class NimGameTest {
     @Test
     fun `should end a running game`() {
         // GIVEN
-        val game = NimGame.startGame(COMPUTER)
+        val game = NimGame.startGame(1, COMPUTER)
 
         // WHEN
         game.endGame()
@@ -45,7 +45,7 @@ class NimGameTest {
     @Test
     fun `should win a game - human`() {
         // GIVEN
-        val game = NimGame.startGame(HUMAN)
+        val game = NimGame.startGame(1, HUMAN)
         game.pullSticks(3) // HUMAN
         game.pullSticks(3) // COMPUTER
         game.pullSticks(3) // HUMAN
@@ -68,7 +68,7 @@ class NimGameTest {
     @Test
     fun `should not end an already ended game`() {
         // GIVEN
-        val game = NimGame.startGame(HUMAN)
+        val game = NimGame.startGame(1, HUMAN)
         game.endGame()
 
         // THEN
@@ -81,7 +81,7 @@ class NimGameTest {
     @Test
     fun `should restart a running game`() {
         // GIVEN
-        val game = NimGame.startGame(HUMAN)
+        val game = NimGame.startGame(1, HUMAN)
         game.pullSticks(1)
 
         // WHEN
@@ -99,7 +99,7 @@ class NimGameTest {
     @Test
     fun `should not restart an already ended game`() {
         // GIVEN
-        val game = NimGame.startGame(HUMAN)
+        val game = NimGame.startGame(1, HUMAN)
         game.endGame()
 
         // THEN
@@ -112,7 +112,7 @@ class NimGameTest {
     @Test
     fun `should only pull allowed number of sticks`() {
         // GIVEN
-        val game = NimGame.startGame(COMPUTER)
+        val game = NimGame.startGame(1, COMPUTER)
 
         // WHEN
         for (sticks in 1..3)
@@ -126,7 +126,7 @@ class NimGameTest {
     @Test
     fun `should not pull more than allowed number of sticks`() {
         // GIVEN
-        val game = NimGame.startGame(HUMAN)
+        val game = NimGame.startGame(1, HUMAN)
 
         // THEN
         assertThrows<SticksToPullException> {

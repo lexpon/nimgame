@@ -26,9 +26,9 @@ class NimGame private constructor(
         private const val STICKS_START = 13
         private val STICKS_TO_PULL_POSSIBLE = listOf(1, 2, 3)
 
-        fun startGame(firstPlayer: Player): NimGame {
+        fun startGame(gameId: Int, firstPlayer: Player): NimGame {
             val game = NimGame(
-                    id = NimGameIdGenerator.getNewId(),
+                    id = gameId,
                     state = RUNNING,
                     leftSticks = STICKS_START,
                     currentPlayer = firstPlayer

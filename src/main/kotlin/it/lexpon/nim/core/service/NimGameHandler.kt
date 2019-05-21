@@ -14,7 +14,8 @@ import org.springframework.stereotype.Service
 @Service
 class NimGameHandler(
         private val randomPlayerGenerator: RandomPlayerGenerator,
-        private val sticksToPullGenerator: SticksToPullGenerator
+        private val sticksToPullGenerator: SticksToPullGenerator,
+        private val nimGameIdGenerator: NimGameIdGenerator
 ) {
 
     companion object : KLogging()
@@ -32,8 +33,10 @@ class NimGameHandler(
         if (game != null && game!!.getGameInfo().state != ENDED)
             throw GameNotStartableException("There is a game running already. Starting a game only possible when it has not been started yet or if it is ended")
 
-        val firstPlayer = randomPlayerGenerator.determineRandomPlayer()
-        game = NimGame.startGame(firstPlayer)
+        game = NimGame.startGame(
+                gameId = nimGameIdGenerator.getNewId(),
+                firstPlayer = randomPlayerGenerator.determineRandomPlayer()
+        )
 
         val events = mutableListOf<GameEvent>()
         events.add(Start("Game started"))

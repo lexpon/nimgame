@@ -27,6 +27,8 @@ class NimGameHandlerTest {
     private lateinit var randomPlayerGenerator: RandomPlayerGenerator
     @Mock
     private lateinit var sticksToPullGenerator: SticksToPullGenerator
+    @Mock
+    private lateinit var nimGameIdGenerator: NimGameIdGenerator
 
     @InjectMocks
     private lateinit var testee: NimGameHandler
@@ -34,6 +36,7 @@ class NimGameHandlerTest {
     @Before
     fun initSticksToPullGenerator() {
         whenever(sticksToPullGenerator.getSticksToPullForComputer(any())).thenReturn(1)
+        whenever(nimGameIdGenerator.getNewId()).thenReturn(1)
     }
 
     @Test
