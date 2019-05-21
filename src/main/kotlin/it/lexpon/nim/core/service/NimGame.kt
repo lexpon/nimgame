@@ -1,6 +1,7 @@
 package it.lexpon.nim.core.service
 
 import it.lexpon.nim.core.domainobject.GameInfo
+import it.lexpon.nim.core.domainobject.GameState
 import it.lexpon.nim.core.domainobject.GameState.ENDED
 import it.lexpon.nim.core.domainobject.GameState.RUNNING
 import it.lexpon.nim.core.domainobject.Player
@@ -12,7 +13,14 @@ import it.lexpon.nim.core.exception.PullSticksNotPossibleException
 import it.lexpon.nim.core.exception.SticksToPullException
 import mu.KLogging
 
-class NimGame private constructor(private var info: GameInfo) {
+class NimGame private constructor(
+        private var id: Int,
+        private var state: GameState,
+        private var leftSticks: Int,
+        private var currentPlayer: Player,
+        private var winner: Player? = null
+) {
+
 
     companion object : KLogging() {
         private const val STICKS_START = 13
@@ -20,73 +28,67 @@ class NimGame private constructor(private var info: GameInfo) {
 
         fun startGame(firstPlayer: Player): NimGame {
             val game = NimGame(
-                    info = GameInfo(
-                            id = NimGameIdGenerator.getNewId(),
-                            state = RUNNING,
-                            leftSticks = STICKS_START,
-                            currentPlayer = firstPlayer
-                    )
+                    id = NimGameIdGenerator.getNewId(),
+                    state = RUNNING,
+                    leftSticks = STICKS_START,
+                    currentPlayer = firstPlayer
             )
-            logger.debug { "Started new game. Info=${game.info}" }
+            logger.debug { "Started new game: $game" }
             return game
         }
     }
 
-    fun getGameInfo() = info
+    fun getGameInfo() = GameInfo(id, state, leftSticks, currentPlayer, winner)
 
     fun endGame() {
-        if (info.state != RUNNING)
+        if (state != RUNNING)
             throw GameNotEndableException("Cannot end game. Game has to have gameState=$RUNNING to be ended.")
 
-        info = info.copy(state = ENDED)
-        logger.debug { "Game ended. GameInfo=$info" }
+        state = ENDED
+        logger.debug { "Game ended: $this" }
     }
 
     fun restartGame(firstPlayer: Player) {
-        if (info.state != RUNNING)
+        if (state != RUNNING)
             throw GameNotRestartableException("Cannot restart game. Game has to have gameState=$RUNNING to be restarted.")
 
-        info = info.copy(
-                leftSticks = STICKS_START,
-                currentPlayer = firstPlayer,
-                winner = null
-        )
+        leftSticks = STICKS_START
+        currentPlayer = firstPlayer
+        winner = null
+        logger.debug { "Game restarted: $this" }
     }
 
     fun pullSticks(sticksToPull: Int) {
-        if (info.state != RUNNING)
-            throw PullSticksNotPossibleException("Not possible to pull sticks when game has state=${info.state}. It needs to have state=$RUNNING")
+        if (state != RUNNING)
+            throw PullSticksNotPossibleException("Not possible to pull sticks when game has state=$state. It needs to have state=$RUNNING")
 
         val allowedNumberOfSticks = getPossibleSticksToPull()
         if (!allowedNumberOfSticks.contains(sticksToPull))
             throw SticksToPullException("Not possible to pull $sticksToPull sticks. Number of sticks has to be in $allowedNumberOfSticks")
 
-        val currentPlayer = info.currentPlayer
-        val nextLeftSticks = info.leftSticks - sticksToPull
-        val nextPlayer = when (currentPlayer) {
+        leftSticks = leftSticks - sticksToPull
+        val playerBeforePullingSticks = currentPlayer
+        val nextPlayer = when (playerBeforePullingSticks) {
             HUMAN -> COMPUTER
             COMPUTER -> HUMAN
         }
-        val winner = if (nextLeftSticks == 0) nextPlayer else null
-        val state = winner?.let { ENDED } ?: RUNNING
+        winner = if (leftSticks == 0) nextPlayer else null
+        if (winner == null)
+            currentPlayer = nextPlayer
+        state = winner?.let { ENDED } ?: RUNNING
 
-        info = info.copy(
-                state = state,
-                leftSticks = nextLeftSticks,
-                currentPlayer = if (winner == null) nextPlayer else currentPlayer,
-                winner = winner
-        )
-
-        logger.debug { "Pulled $sticksToPull by $currentPlayer. Info=$info" }
+        logger.debug { "Pulled $sticksToPull stick by $playerBeforePullingSticks: $this" }
     }
 
     fun getPossibleSticksToPull(): List<Int> {
-        if (info.leftSticks >= STICKS_TO_PULL_POSSIBLE.max()!!)
+        if (leftSticks >= STICKS_TO_PULL_POSSIBLE.max()!!)
             return STICKS_TO_PULL_POSSIBLE
 
         val min = STICKS_TO_PULL_POSSIBLE.min()!!
-        val max = info.leftSticks
+        val max = leftSticks
         return IntRange(min, max).toList()
     }
+
+    override fun toString() = getGameInfo().toString()
 
 }
