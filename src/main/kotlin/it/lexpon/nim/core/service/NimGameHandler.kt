@@ -5,13 +5,16 @@ import it.lexpon.nim.core.domainobject.GameState.ENDED
 import it.lexpon.nim.core.domainobject.GameState.RUNNING
 import it.lexpon.nim.core.domainobject.Player.COMPUTER
 import it.lexpon.nim.core.domainobject.Player.HUMAN
+import it.lexpon.nim.core.exception.GameNotStartableException
 import it.lexpon.nim.core.exception.MoveNotPossibleException
 import it.lexpon.nim.core.exception.NoGameException
 import mu.KLogging
 import org.springframework.stereotype.Service
 
 @Service
-class NimGameHandler {
+class NimGameHandler(
+        private val randomPlayerGenerator: RandomPlayerGenerator
+) {
 
     companion object : KLogging()
 
@@ -25,7 +28,11 @@ class NimGameHandler {
     fun getGameHistory(): GameHistory = GameHistory(gameHistory.map { it.getGameInfo() })
 
     fun startGame(): GameEventInfo {
-        game = NimGame.startGame(determineRandomPlayer())
+        if (game != null && game!!.getGameInfo().state != ENDED)
+            throw GameNotStartableException("There is a game running already. Starting a game only possible when it has not been started yet or if it is ended")
+
+        val firstPlayer = randomPlayerGenerator.determineRandomPlayer()
+        game = NimGame.startGame(firstPlayer)
 
         val events = mutableListOf<GameEvent>()
         events.add(Start("Game started"))
@@ -33,8 +40,6 @@ class NimGameHandler {
 
         return GameEventInfo(events)
     }
-
-    private fun determineRandomPlayer(): Player = Player.values().toList().shuffled().first()
 
     private fun makeComputerMoveIfNecessary(game: NimGame, events: MutableList<GameEvent>) {
         val info = game.getGameInfo()
@@ -55,7 +60,8 @@ class NimGameHandler {
 
     fun reStartGame(): GameEventInfo =
             game?.let {
-                it.restartGame(determineRandomPlayer())
+                val firstPlayer = randomPlayerGenerator.determineRandomPlayer()
+                it.restartGame(firstPlayer)
                 val events = mutableListOf<GameEvent>()
                 events.add(Restart("Game restarted"))
                 makeComputerMoveIfNecessary(it, events)
