@@ -4,11 +4,13 @@ import it.lexpon.nim.core.domainobject.GameEventType.*
 import it.lexpon.nim.core.service.NimGameEventValidator
 
 data class GameEventInfo(
-        val gameEvents: List<GameEvent>
+        val gameEvents: List<GameEvent>,
+        val gameInfo: GameInfo
 ) {
 
-    constructor(gameEvent: GameEvent) : this(
-            gameEvents = listOf(gameEvent)
+    constructor(gameEvent: GameEvent, gameInfo: GameInfo) : this(
+            gameEvents = listOf(gameEvent),
+            gameInfo = gameInfo
     )
 
     init {

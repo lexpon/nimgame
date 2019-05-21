@@ -39,7 +39,7 @@ class NimGameHandler(
         events.add(Start("Game started"))
         makeComputerMoveIfNecessary(game!!, events)
 
-        return GameEventInfo(events)
+        return GameEventInfo(events, game!!.getGameInfo())
     }
 
     private fun makeComputerMoveIfNecessary(game: NimGame, events: MutableList<GameEvent>) {
@@ -66,7 +66,7 @@ class NimGameHandler(
                 val events = mutableListOf<GameEvent>()
                 events.add(Restart("Game restarted"))
                 makeComputerMoveIfNecessary(it, events)
-                return GameEventInfo(events)
+                return GameEventInfo(events, it.getGameInfo())
             } ?: run {
                 throw NoGameException("Game has not been started yet. Not possible not restart it.")
             }
@@ -75,7 +75,7 @@ class NimGameHandler(
             game?.let {
                 it.endGame()
                 gameHistory.add(it)
-                return GameEventInfo(End("Game ended"))
+                return GameEventInfo(End("Game ended"), it.getGameInfo())
             } ?: run {
                 throw NoGameException("Game has not been started yet. Not possible not end it.")
             }
@@ -96,7 +96,7 @@ class NimGameHandler(
                     events.add(End("Game Ended. Winner is ${info.winner}"))
                 }
 
-                return GameEventInfo(events)
+                return GameEventInfo(events, it.getGameInfo())
             } ?: run {
                 throw NoGameException("Game has not been started yet. Not possible to make a move.")
             }

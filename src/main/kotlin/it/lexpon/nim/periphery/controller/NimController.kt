@@ -20,42 +20,24 @@ class NimController(
                     .also { logger.info { it } }
 
     @PostMapping("/start")
-    fun startGame(): GameInfoResponse {
-        val gameEventInfo = nimGameHandler.startGame()
-        val gameInfo = nimGameHandler.getGameInfo()
-
-        return GameInfoResponse(gameEventInfo, gameInfo)
-                .also { logger.info { "Game started. Response=$it" } }
-    }
+    fun startGame(): GameInfoResponse =
+            GameInfoResponse(nimGameHandler.startGame())
+                    .also { logger.info { "Game started. Response=$it" } }
 
     @PostMapping("/restart")
-    fun reStartGame(): GameInfoResponse {
-        val gameEventInfo = nimGameHandler.reStartGame()
-        val gameInfo = nimGameHandler.getGameInfo()
-
-        return GameInfoResponse(gameEventInfo, gameInfo)
-                .also { logger.info { "Game restarted. Response=$it" } }
-    }
+    fun reStartGame(): GameInfoResponse =
+            GameInfoResponse(nimGameHandler.reStartGame())
+                    .also { logger.info { "Game restarted. Response=$it" } }
 
     @PostMapping("/end")
-    fun endGame(): GameInfoResponse {
-        val gameEventInfo = nimGameHandler.endGame()
-        val gameInfo = nimGameHandler.getGameInfo()
-
-        return GameInfoResponse(gameEventInfo, gameInfo)
-                .also { logger.info { "Game ended. Response=$it" } }
-
-    }
+    fun endGame(): GameInfoResponse =
+            GameInfoResponse(nimGameHandler.endGame())
+                    .also { logger.info { "Game ended. Response=$it" } }
 
     @PostMapping("/pullsticks")
-    fun pullSticks(@RequestParam sticksToPull: Int): GameInfoResponse {
-        val gameEventInfo = nimGameHandler.makeMove(sticksToPull)
-        val gameInfo = nimGameHandler.getGameInfo()
-
-        return GameInfoResponse(gameEventInfo, gameInfo)
-                .also { logger.info { "Made move. Response=$it" } }
-
-    }
+    fun pullSticks(@RequestParam sticksToPull: Int): GameInfoResponse =
+            GameInfoResponse(nimGameHandler.makeMove(sticksToPull))
+                    .also { logger.info { "Made move. Response=$it" } }
 
     @GetMapping("/history")
     fun getGameHistory(): GameHistoryResponse = GameHistoryResponse(nimGameHandler.getGameHistory())

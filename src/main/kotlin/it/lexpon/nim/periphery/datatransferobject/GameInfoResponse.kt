@@ -17,11 +17,11 @@ data class GameInfoResponse(
             winner = gameInfo.winner?.name
     )
 
-    constructor(gameEventInfo: GameEventInfo, gameInfo: GameInfo) : this(
-            id = gameInfo.id,
-            gameState = gameInfo.state.name,
-            leftSticks = gameInfo.leftSticks,
-            winner = gameInfo.winner?.name,
+    constructor(gameEventInfo: GameEventInfo) : this(
+            id = gameEventInfo.gameInfo.id,
+            gameState = gameEventInfo.gameInfo.state.name,
+            leftSticks = gameEventInfo.gameInfo.leftSticks,
+            winner = gameEventInfo.gameInfo.winner?.name,
             gameEvents = gameEventInfo.gameEvents.map { it.toString() }
     )
 }
