@@ -46,7 +46,6 @@ class NimGameHandlerTest {
 
         // WHEN
         val eventInfo = testee.startGame()
-        val info = testee.getGameInfo()
 
         // THEN
         assertThat(eventInfo).isNotNull
@@ -54,6 +53,7 @@ class NimGameHandlerTest {
         assertThat(eventInfo.gameEvents.size).isEqualTo(1)
         assertThat(eventInfo.gameEvents[0].gameEventType).isEqualTo(START)
 
+        val info = eventInfo.gameInfo
         assertThat(info).isNotNull
         assertThat(info.id).isEqualTo(1)
         assertThat(info.currentPlayer).isEqualTo(HUMAN)
@@ -69,7 +69,6 @@ class NimGameHandlerTest {
 
         // WHEN
         val eventInfo = testee.startGame()
-        val info = testee.getGameInfo()
 
         // THEN
         assertThat(eventInfo).isNotNull
@@ -78,6 +77,7 @@ class NimGameHandlerTest {
         assertThat(eventInfo.gameEvents[0].gameEventType).isEqualTo(START)
         assertThat(eventInfo.gameEvents[1].gameEventType).isEqualTo(COMPUTER_MOVE)
 
+        val info = eventInfo.gameInfo
         assertThat(info).isNotNull
         assertThat(info.id).isEqualTo(1)
         assertThat(info.currentPlayer).isEqualTo(HUMAN)
@@ -107,7 +107,6 @@ class NimGameHandlerTest {
 
         // WHEN
         val eventInfo = testee.reStartGame()
-        val info = testee.getGameInfo()
 
         // THEN
         assertThat(eventInfo).isNotNull
@@ -115,6 +114,7 @@ class NimGameHandlerTest {
         assertThat(eventInfo.gameEvents.size).isEqualTo(1)
         assertThat(eventInfo.gameEvents[0].gameEventType).isEqualTo(RESTART)
 
+        val info = eventInfo.gameInfo
         assertThat(info).isNotNull
         assertThat(info.id).isEqualTo(1)
         assertThat(info.currentPlayer).isEqualTo(HUMAN)
@@ -130,16 +130,16 @@ class NimGameHandlerTest {
         testee.startGame()
 
         // WHEN
-        val gameEventInfo = testee.reStartGame()
-        val info = testee.getGameInfo()
+        val eventInfo = testee.reStartGame()
 
         // THEN
-        assertThat(gameEventInfo).isNotNull
-        assertThat(gameEventInfo.gameEvents).isNotNull
-        assertThat(gameEventInfo.gameEvents.size).isEqualTo(2)
-        assertThat(gameEventInfo.gameEvents[0].gameEventType).isEqualTo(RESTART)
-        assertThat(gameEventInfo.gameEvents[1].gameEventType).isEqualTo(COMPUTER_MOVE)
+        assertThat(eventInfo).isNotNull
+        assertThat(eventInfo.gameEvents).isNotNull
+        assertThat(eventInfo.gameEvents.size).isEqualTo(2)
+        assertThat(eventInfo.gameEvents[0].gameEventType).isEqualTo(RESTART)
+        assertThat(eventInfo.gameEvents[1].gameEventType).isEqualTo(COMPUTER_MOVE)
 
+        val info = eventInfo.gameInfo
         assertThat(info).isNotNull
         assertThat(info.id).isEqualTo(1)
         assertThat(info.currentPlayer).isEqualTo(HUMAN)
@@ -179,7 +179,6 @@ class NimGameHandlerTest {
 
         // WHEN
         val eventInfo = testee.endGame()
-        val info = testee.getGameInfo()
 
         // THEN
         assertThat(eventInfo).isNotNull
@@ -187,6 +186,7 @@ class NimGameHandlerTest {
         assertThat(eventInfo.gameEvents.size).isEqualTo(1)
         assertThat(eventInfo.gameEvents[0].gameEventType).isEqualTo(END)
 
+        val info = eventInfo.gameInfo
         assertThat(info).isNotNull
         assertThat(info.id).isEqualTo(1)
         assertThat(info.currentPlayer).isEqualTo(HUMAN)
@@ -227,7 +227,6 @@ class NimGameHandlerTest {
 
         // WHEN
         val eventInfo = testee.makeMove(sticksToPullByHuman)
-        val info = testee.getGameInfo()
 
         // THEN
         assertThat(eventInfo).isNotNull
@@ -236,6 +235,7 @@ class NimGameHandlerTest {
         assertThat(eventInfo.gameEvents[0].gameEventType).isEqualTo(HUMAN_MOVE)
         assertThat(eventInfo.gameEvents[1].gameEventType).isEqualTo(COMPUTER_MOVE)
 
+        val info = eventInfo.gameInfo
         assertThat(info).isNotNull
         assertThat(info.id).isEqualTo(1)
         assertThat(info.currentPlayer).isEqualTo(HUMAN)
@@ -255,7 +255,6 @@ class NimGameHandlerTest {
 
         // WHEN
         val eventInfo = testee.makeMove(1)
-        val info = testee.getGameInfo()
 
         // THEN
         assertThat(eventInfo).isNotNull
@@ -265,6 +264,7 @@ class NimGameHandlerTest {
         assertThat(eventInfo.gameEvents[1].gameEventType).isEqualTo(COMPUTER_MOVE)
         assertThat(eventInfo.gameEvents[2].gameEventType).isEqualTo(END)
 
+        val info = eventInfo.gameInfo
         assertThat(info).isNotNull
         assertThat(info.id).isEqualTo(1)
         assertThat(info.currentPlayer).isEqualTo(COMPUTER)
@@ -284,7 +284,6 @@ class NimGameHandlerTest {
 
         // WHEN
         val eventInfo = testee.makeMove(1)
-        val info = testee.getGameInfo()
 
         // THEN
         assertThat(eventInfo).isNotNull
@@ -293,6 +292,7 @@ class NimGameHandlerTest {
         assertThat(eventInfo.gameEvents[0].gameEventType).isEqualTo(HUMAN_MOVE)
         assertThat(eventInfo.gameEvents[1].gameEventType).isEqualTo(END)
 
+        val info = eventInfo.gameInfo
         assertThat(info).isNotNull
         assertThat(info.id).isEqualTo(1)
         assertThat(info.currentPlayer).isEqualTo(HUMAN)
@@ -310,6 +310,7 @@ class NimGameHandlerTest {
 
         // WHEN
         val history = testee.getGameHistory()
+
         // THEN
         assertThat(history).isNotNull
         assertThat(history.gameHistory.first().id).isEqualTo(1)
