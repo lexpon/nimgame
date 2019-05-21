@@ -1,93 +1,76 @@
 package it.lexpon.nim.core.service
 
-import it.lexpon.nim.core.exception.GameNotRestartableException
-import it.lexpon.nim.core.exception.GameNotStartableException
-import org.junit.Before
 import org.junit.Test
-import org.junit.jupiter.api.assertThrows
+import org.mockito.InjectMocks
 
 class NimGameHandlerTest {
 
+    @InjectMocks
     private var testee: NimGameHandler = NimGameHandler()
 
-    @Before
-    fun init() {
-        testee = NimGameHandler()
+    @Test
+    fun `should start game`() {
+
     }
 
     @Test
-    fun `should start game - not started yet`() {
-        // WHEN
-        val gameInformation = testee.startGame()
+    fun `should start game and make a computer move`() {
 
-        // THEN
-//        assertThat(gameInformation.gameState).isEqualTo(RUNNING)
-//        assertThat(gameInformation.leftSticks).isEqualTo(13)
-//        assertThat(gameInformation.winner).isNull()
     }
 
     @Test
-    fun `should start game - game ended before`() {
-        // GIVEN
-        testee.startGame()
-        testee.endGame()
+    fun `should not start a game - game is running already`() {
 
-        // WHEN
-        val gameInformation = testee.startGame()
-
-        // THEN
-//        assertThat(gameInformation.gameState).isEqualTo(RUNNING)
-//        assertThat(gameInformation.leftSticks).isEqualTo(13)
-//        assertThat(gameInformation.winner).isNull()
-    }
-
-    @Test
-    fun `should not start game if it has been started already`() {
-        // GIVEN
-        // ... game has been started already
-        testee.startGame()
-
-        // THEN
-        assertThrows<GameNotStartableException> {
-            // WHEN
-            testee.startGame()
-        }
     }
 
     @Test
     fun `should restart a running game`() {
-        // GIVEN
-        testee.startGame()
 
-        // WHEN
-        val gameInformation = testee.reStartGame()
-
-        // THEN
-//        assertThat(gameInformation.gameState).isEqualTo(RUNNING)
-//        assertThat(gameInformation.leftSticks).isEqualTo(13)
-//        assertThat(gameInformation.winner).isNull()
     }
 
     @Test
-    fun `should not restart game - game not started yet`() {
-        // THEN
-        assertThrows<GameNotRestartableException> {
-            // WHEN
-            testee.reStartGame()
-        }
+    fun `should restart a running game and make a computer move`() {
+
     }
 
     @Test
-    fun `should not restart game - game ended`() {
-        // GIVEN
-        testee.startGame()
-        testee.endGame()
+    fun `should not restart a game - no game started yet`() {
 
-        // THEN
-        assertThrows<GameNotRestartableException> {
-            // WHEN
-            testee.reStartGame()
-        }
+    }
+
+    @Test
+    fun `should not restart a game - game ended already`() {
+
+    }
+
+    @Test
+    fun `should end a running game`() {
+
+    }
+
+    @Test
+    fun `should not end a game - game not started yet`() {
+
+    }
+
+    @Test
+    fun `should not end a game - game ended already`() {
+
+    }
+
+    @Test
+    fun `should make move - human and computer`() {
+
+    }
+
+    @Test
+    fun `should make move - human and computer - human wins`() {
+
+    }
+
+    @Test
+    fun `should make move - human - computer wins`() {
+
     }
 
 }

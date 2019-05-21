@@ -36,24 +36,22 @@ class NimGameHandler {
 
     private fun determineRandomPlayer(): Player = Player.values().toList().shuffled().first()
 
-    private fun makeComputerMoveIfNecessary(game: NimGame, events: MutableList<GameEvent>) =
-            game.let {
-                val info = it.getGameInfo()
-                if (info.state == RUNNING && info.currentPlayer == COMPUTER) {
-                    val sticksToPull = getSticksToPullForComputer()
-                    it.pullSticks(sticksToPull)
-                    events.add(ComputerMove(sticksToPull))
-                }
-            }
+    private fun makeComputerMoveIfNecessary(game: NimGame, events: MutableList<GameEvent>) {
+        val info = game.getGameInfo()
+        if (info.state == RUNNING && info.currentPlayer == COMPUTER) {
+            val sticksToPull = getSticksToPullForComputer()
+            game.pullSticks(sticksToPull)
+            events.add(ComputerMove(sticksToPull))
+        }
+    }
 
-    private fun makeHumanMoveIfNecessary(game: NimGame, sticksToPull: Int, events: MutableList<GameEvent>) =
-            game.let {
-                val info = it.getGameInfo()
-                if (info.state == RUNNING && info.currentPlayer == HUMAN) {
-                    it.pullSticks(sticksToPull)
-                    events.add(HumanMove(sticksToPull))
-                }
-            }
+    private fun makeHumanMoveIfNecessary(game: NimGame, sticksToPull: Int, events: MutableList<GameEvent>) {
+        val info = game.getGameInfo()
+        if (info.state == RUNNING && info.currentPlayer == HUMAN) {
+            game.pullSticks(sticksToPull)
+            events.add(HumanMove(sticksToPull))
+        }
+    }
 
     fun reStartGame(): GameEventInfo =
             game?.let {
