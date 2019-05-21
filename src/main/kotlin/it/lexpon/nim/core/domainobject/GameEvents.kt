@@ -23,6 +23,8 @@ enum class GameEventType {
 
 abstract class GameEvent(val message: String) {
     abstract val gameEventType: GameEventType
+
+    override fun toString(): String = "${this.gameEventType}: ${this.message}"
 }
 
 class Start(message: String) : GameEvent(message) {

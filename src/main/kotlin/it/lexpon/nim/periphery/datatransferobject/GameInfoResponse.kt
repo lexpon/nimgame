@@ -22,6 +22,6 @@ data class GameInfoResponse(
             gameState = gameInfo.state.name,
             leftSticks = gameInfo.leftSticks,
             winner = gameInfo.winner?.name,
-            gameEvents = gameEventInfo.gameEvents.map { "${it.gameEventType}: ${it.message}" }
+            gameEvents = gameEventInfo.gameEvents.map { it.toString() }
     )
 }
