@@ -5,7 +5,7 @@ import it.lexpon.nim.core.domainobject.GameState.RUNNING
 import it.lexpon.nim.core.domainobject.Player.*
 import it.lexpon.nim.core.exception.GameNotEndableException
 import it.lexpon.nim.core.exception.GameNotRestartableException
-import it.lexpon.nim.core.exception.SticksToPullException
+import it.lexpon.nim.core.exception.NumberOfSticksToPullException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.jupiter.api.assertThrows
@@ -129,7 +129,7 @@ class NimGameTest {
         val game = NimGame.startGame(1, HUMAN)
 
         // THEN
-        assertThrows<SticksToPullException> {
+        assertThrows<NumberOfSticksToPullException> {
             // WHEN
             game.pullSticks(1337)
         }

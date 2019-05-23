@@ -15,16 +15,30 @@ class NimControllerAdvice {
 
     @ExceptionHandler(
             value = [
-                GameNotStartableException::class,
-                GameNotRestartableException::class,
                 GameNotEndableException::class,
-                SticksToPullException::class,
+                GameNotRestartableException::class,
+                GameNotStartableException::class,
+                MoveNotPossibleException::class,
                 NoGameException::class,
-                MoveNotPossibleException::class
+                NumberOfSticksToPullException::class,
+                PullingSticksNotPossibleException::class
             ]
     )
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    fun handleFeeNotFoundException(exception: RuntimeException): ErrorResponse =
+    fun handleBadRequests(exception: RuntimeException): ErrorResponse =
+            ErrorResponse(
+                    message = "${exception.message}"
+            ).also {
+                logger.warn { it.message }
+            }
+
+    @ExceptionHandler(
+            value = [
+                NotPossibleEventCombinationException::class
+            ]
+    )
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    fun handleInternalErrors(exception: RuntimeException): ErrorResponse =
             ErrorResponse(
                     message = "${exception.message}"
             ).also {

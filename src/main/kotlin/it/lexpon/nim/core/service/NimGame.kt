@@ -9,8 +9,8 @@ import it.lexpon.nim.core.domainobject.Player.COMPUTER
 import it.lexpon.nim.core.domainobject.Player.HUMAN
 import it.lexpon.nim.core.exception.GameNotEndableException
 import it.lexpon.nim.core.exception.GameNotRestartableException
-import it.lexpon.nim.core.exception.PullSticksNotPossibleException
-import it.lexpon.nim.core.exception.SticksToPullException
+import it.lexpon.nim.core.exception.NumberOfSticksToPullException
+import it.lexpon.nim.core.exception.PullingSticksNotPossibleException
 import mu.KLogging
 
 class NimGame private constructor(
@@ -60,11 +60,11 @@ class NimGame private constructor(
 
     fun pullSticks(sticksToPull: Int) {
         if (state != RUNNING)
-            throw PullSticksNotPossibleException("Not possible to pull sticks when game has state=$state. It needs to have state=$RUNNING")
+            throw PullingSticksNotPossibleException("Not possible to pull sticks when game has state=$state. It needs to have state=$RUNNING")
 
         val allowedNumberOfSticks = getPossibleSticksToPull()
         if (!allowedNumberOfSticks.contains(sticksToPull))
-            throw SticksToPullException("Not possible to pull $sticksToPull sticks. Number of sticks has to be in $allowedNumberOfSticks")
+            throw NumberOfSticksToPullException("Not possible to pull $sticksToPull sticks. Number of sticks has to be in $allowedNumberOfSticks")
 
         leftSticks = leftSticks - sticksToPull
         val playerBeforePullingSticks = currentPlayer
